@@ -31,4 +31,3 @@ if (file_exists(WB_PATH.'/modules/manufaktur_gallery/class.gallery.php')) {
 else {
 	return "manufakturGallery is not installed!";
 }
-
