@@ -13,10 +13,9 @@
  */
 
 // prevent this file from being accessed directly
-if (! defined ( 'WB_PATH' ))
-	die ( 'invalid call of ' . $_SERVER ['SCRIPT_NAME'] );
+if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
 
-$module_directory = 'manufaktur_galley';
+$module_directory = 'manufaktur_gallery';
 $module_name = 'manufakturGallery';
 $module_function = 'snippet';
 $module_version = '0.10';

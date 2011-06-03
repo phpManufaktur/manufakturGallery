@@ -10,6 +10,9 @@
  * @version $Id$
  */
 
+// prevent this file from being accessed directly
+if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
+
 global $admin;
 
 $error = '';
