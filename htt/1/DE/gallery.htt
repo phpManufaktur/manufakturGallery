@@ -1,0 +1,120 @@
+{*
+ * manufakturGallery
+ *
+ * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ * @link http://phpmanufaktur.de
+ * @copyright 2011
+ * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
+ * @version $Id$
+ 
+ Es stehen die folgenden Platzhalter/Variablen zur Verfuegung:
+ 
+ // Album
+ $album.id            = ID des Albums
+ $album.from.name     = Veröffentlicht von...
+ $album.name          = Name des Albums
+ $album.location      = Ort des Albums
+ $album.description   = Beschreibung des Albums
+ $album.link          = URL auf das Album bei Facebook
+ $album.count         = Anzahl der Bilder
+ $album.created_time  = Album erstellt am (Time String)
+ $album.updated_time  = Album zuletzt aktualisiert (Time String)
+ $album.comments      = Kommentare zu dem Album (Array)
+ 
+ // fuer jedes Photo ($photos Array)
+ $photo.zoom_url      = URL auf das Foto in hoher Aufloesung
+ $photo.zoom_width    = Breite des Foto in hoher Aufloesung
+ $photo.zoom_height   = Hoehe des Foto in hoher Aufloesung
+ $photo.image_url     = URL des Vorschaubild
+ $photo.image_width   = Breite des Vorschaubild
+ $photo.image_height  = Hoehe des Vorschaubild
+ $photo.image_description = Beschreibung des Bildes
+ $photo.comments      = enthaelt die Kommentare zu diesem Bild (Array)
+ 
+ // Kommentare ($comments)
+ $comment.from.id     = Facebook ID des Kommentierenden
+ $comment.from.name   = Name des Kommentators
+ $comment.message     = Kommentar
+ $comment.created_time  = Zeitpunkt des Kommentars (Time String)
+ 
+ // Parameter
+ $columns             = Anzahl der Spalten
+ $photo_description   = 1=Beschreibung anzeigen, 0=AUS
+ $photo_comments      = 1=Kommentare zum Foto anzeigen, 0=AUS
+ $album_comments      = 1=Kommentare zum Album anzeigen, 0=AUS
+ $merge_comments      = 1=alle Kommentare zusammenfassen, 0=AUS
+ $previous_page       = URL zur vorherigen Seite des Albums
+ $next_page           = URL zur nächsten Seite des Albums
+ 
+ *}
+<div class="intro">
+  <h2>{$album.name}</h2>
+  {if isset($album.description)}<p class="description">{$album.description}</p>{/if}
+  <div class="album_published">{$album.from.name} - {date_format($album.updated_time "%d.%m.%Y")}</div>
+</div>
+<table>
+  <colgroup>
+    {for i 1 $columns}<col width="186" />{/for}
+  </colgroup>
+  {$i = 0}
+  {foreach $photos photo}
+  {$i = $i+1}
+  {if $i == 1}<tr>{/if}
+    <td class="photo_frame">
+      <div class="{if $photo.selected == 1}photo_border_selected{else}photo_border{/if}">
+        <div class="photo_container">
+          <a rel="fancybox" href="{$photo.zoom_url}"><img src="{$photo.image_url}" width="{$photo.image_width}" height="{$photo.image_height}" alt="{$photo.image_description}" title="{$photo.image_description}" /></a>
+        </div>
+        {if $photo_description == 1}<div class="photo_description">{$photo.image_description}</div>{/if}
+        {if (($merge_comments == 0) && ($photo_comments == 1))}
+        <div class="photo_comments">
+          {foreach $photo.comments comment}
+          <div class="comment_item">
+            <div class="comment_item_picture">
+              <img src="http://graph.facebook.com/{$comment.from.id}/picture?type=square" width="35" height="35" alt="{$comment.from.name}" />
+            </div>
+            <div class="comment_item_message">
+              <b>{$comment.from.name}</b>: <i>{$comment.message}</i><br /><span class="smaller">{date_format($comment.created_time "%d.%m.%Y - %H:%M")}</span>
+            </div>
+          </div>
+          {/foreach}
+        </div>
+        {/if}
+      </div>
+    </td>
+  {if $i == $columns}{$i = 0}</tr>{/if}
+  {/foreach}
+  {if $i != 0}{for x $i+1 $columns}<td>&nbsp;</td>{/for}</tr>{/if}
+  <tr>
+    <td colspan="{$columns}">
+      <table width="100%">
+        <colgroup>
+          <col width="50%" />
+          <col width="50%" />
+        </colgroup>
+        <tr>
+          <td class="previous_page">{if (count_characters($previous_page)) > 0}<a href="{$previous_page}"><< Vorherige Seite</a>{else}&nbsp;{/if}</td>
+          <td class="next_page">{if (count_characters($next_page)) > 0}<a href="{$next_page}">Nächste Seite >></a>{else}&nbsp;{/if}</td>        
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="{$columns}">
+      {if $album_comments == 1}
+      <div class="photo_comments">
+        {foreach $album.comments comment}
+        <div class="comment_item">
+          <div class="comment_item_picture">
+            <img src="http://graph.facebook.com/{$comment.from.id}/picture?type=square" width="35" height="35" alt="{$comment.from.name}" />
+          </div>
+          <div class="comment_item_message">
+            <b>{$comment.from.name}</b>: <i>{$comment.message}</i><br /><span class="smaller">{date_format($comment.created_time "%d.%m.%Y - %H:%M")}</span>
+          </div>
+        </div>
+        {/foreach}
+      </div>
+      {/if}
+    </td>
+  </tr>
+</table>

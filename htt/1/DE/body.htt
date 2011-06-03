@@ -1,0 +1,16 @@
+{*
+ * manufakturGallery
+ *
+ * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ * @link http://phpmanufaktur.de
+ * @copyright 2011
+ * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
+ * @version $Id$
+ *}
+<div id="manufaktur_gallery">
+  {if $error == 1}
+    <div class="error">{$content}</div>
+  {else}
+    {$content}
+  {/if}
+</div>

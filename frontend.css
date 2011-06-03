@@ -1,0 +1,85 @@
+#manufaktur_gallery {
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+}
+.error
+{
+ border: 1px solid #ff0000;
+ color: #ff0000;
+ background-color: #ffdddd;
+ margin: 20px 0 10px 0;
+ padding: 10px;
+ font-size: 8pt;
+}
+.intro {
+  border: 1px solid #000000;
+  color: #000000;
+  background-color: #ffffdd;
+  margin: 20px 0 10px 0;
+  padding: 10px;
+  font-size: 8pt;
+}
+.message
+{
+  border: 1px solid #0000CC;
+  color: #000;
+  background-color: #FFFFCC;
+  margin: 20px 0 10px 0;
+  padding: 10px;
+  font-size: 8pt;
+}
+
+td {
+  font-size: 8pt;
+  vertical-align: top;
+}
+tr.flip {
+  background-color: #FFFFCC;
+}
+tr.flop {
+  background-color: transparent;
+}
+.album_published {
+  text-align: right;
+  font-style: italic;
+}
+.photo_border_selected,
+.photo_border {
+  margin:3px;
+  padding:3px;
+  border:1px solid #666;
+  color: #000;
+  background-color: #fff;
+}
+.photo_border_selected {
+  color: #000;
+  background-color: #ff0000;
+}
+.photo_container {
+  width:180px;
+  height:120px;
+  overflow:hidden;
+}
+.photo_description {
+  padding: 10px 0 0 0;
+  width: 180px;
+  height: 100px;
+  overflow: auto;
+}
+.comment_item {
+  clear: both;
+}
+.comment_item_picture {
+  float: left;
+  width: 35px;
+  height: auto;
+  padding: 0 5px 20px 0;
+}
+.smaller {
+  font-size: smaller;
+}
+.previous_page {
+  text-align: left;
+}
+.next_page {
+  text-align: right;
+}
