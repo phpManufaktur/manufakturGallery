@@ -1,7 +1,16 @@
 #manufaktur_gallery {
   font-family: Tahoma, Verdana, Arial, sans-serif;
 }
-.error
+#manufaktur_gallery a {
+  margin: 0;
+  padding:0;
+}
+#manufaktur_gallery img {
+  border:none;
+  margin: 0;
+  padding: 0;
+}
+#manufaktur_gallery .error
 {
  border: 1px solid #ff0000;
  color: #ff0000;
@@ -10,7 +19,7 @@
  padding: 10px;
  font-size: 8pt;
 }
-.intro {
+#manufaktur_gallery .intro {
   border: 1px solid #000000;
   color: #000000;
   background-color: #ffffdd;
@@ -18,7 +27,7 @@
   padding: 10px;
   font-size: 8pt;
 }
-.message
+#manufaktur_gallery .message
 {
   border: 1px solid #0000CC;
   color: #000;
@@ -27,16 +36,17 @@
   padding: 10px;
   font-size: 8pt;
 }
-
-td {
+#manufaktur_gallery table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  padding: 0;
+  margin: 0;
+}
+#manufaktur_gallery td {
   font-size: 8pt;
   vertical-align: top;
-}
-tr.flip {
-  background-color: #FFFFCC;
-}
-tr.flop {
-  background-color: transparent;
+  margin: 0;
+  padding: 0;
 }
 .album_published {
   text-align: right;
@@ -74,7 +84,7 @@ tr.flop {
   height: auto;
   padding: 0 5px 20px 0;
 }
-.smaller {
+#manufaktur_gallery .smaller {
   font-size: smaller;
 }
 .previous_page {

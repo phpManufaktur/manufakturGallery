@@ -220,7 +220,7 @@ class Gallery {
   	}
   	// Welche Aktion soll ausgefuehrt werden?
   	$action = (isset($_REQUEST[self::request_action])) ? $_REQUEST[self::request_action] : $this->params[self::param_action];
-  	
+  
   	// CSS laden? 
     if ($this->params[self::param_css]) { 
 			if (!is_registered_droplet_css('manufaktur_gallery', PAGE_ID)) { 
@@ -234,7 +234,7 @@ class Gallery {
     // in die Suchfunktion integrieren?
     if ($this->params[self::param_search]) {
     	// Register Droplet for the WebsiteBaker Search Function
-			if (!is_registered_droplet_search('manufaktur_gallery', PAGE_ID)) {
+			if (!is_registered_droplet_search('manufaktur_gallery', PAGE_ID)) { 
   			register_droplet_search('manufaktur_gallery', PAGE_ID, 'manufaktur_gallery');
 			}
     }

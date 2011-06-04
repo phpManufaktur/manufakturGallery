@@ -27,7 +27,8 @@ else {
 }
 
 if (!function_exists('getAlbumID')) {
-	function getAlbumID($page_id, &$params=array()) {
+	function getAlbumID($page_id, &$params=array(), &$page_url='') {
+		global $database;
 		$db_wysiwyg = new db_wb_mod_wysiwyg();
 		$SQL = sprintf(	"SELECT %s FROM %s WHERE %s='%s'",
 										db_wb_mod_wysiwyg::field_text,
@@ -54,6 +55,33 @@ if (!function_exists('getAlbumID')) {
 				}
 			}
 		}
+		 
+		if (empty($album_id)) { 
+			// kein Album gefunden, moeglicherweise TOPICS?
+			$SQL = sprintf("SHOW TABLE STATUS LIKE '%smod_topics'", TABLE_PREFIX);
+			$query = $database->query($SQL);
+			if ($query->numRows() > 0) {
+				// TOPICS ist installiert
+				$SQL = sprintf(	"SELECT content_long, link FROM %smod_topics WHERE page_id='%s' AND (content_long LIKE '%%[[manufaktur_gallery?%%')",
+												TABLE_PREFIX,
+												$page_id);
+				$query = $database->query($SQL);
+				while (false !== ($section = $query->fetchRow(MYSQL_ASSOC))) {
+					if (false !== ($start = strpos($section['content_long'], '[[manufaktur_gallery?'))) {
+						$start = $start+strlen('[[manufaktur_gallery?');
+						$end = strpos($section['content_long'], ']]', $start);
+						$param_str = substr($section['content_long'], $start, $end-$start);
+						$param_str = str_ireplace('&amp;', '&', $param_str);
+						parse_str($param_str, $params);
+						if (isset($params['album_id'])) { 
+							$album_id = $params['album_id']; 
+							$page_url = WB_URL.PAGES_DIRECTORY.'/topics/'.$section['link'].PAGE_EXTENSION; 
+							break;
+						}
+					}	
+				} 
+			}			
+		}		
 		return $album_id;
 	} // getAlbumID()
 }
@@ -63,7 +91,7 @@ if (!function_exists('manufaktur_gallery_droplet_search')) {
 		
 		$result = array();
 		
-		$album_id = getAlbumID($page_id);
+		$album_id = getAlbumID($page_id, $params, $page_url);
 		// keine Galerie gefunden?
 		if (empty($album_id)) return $result;
 	
