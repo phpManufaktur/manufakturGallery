@@ -223,37 +223,36 @@ class Gallery {
   	
   	// CSS laden? 
     if ($this->params[self::param_css]) { 
-			if (function_exists('is_registered_droplet_css') && !is_registered_droplet_css('manufaktur_gallery')) { 
+			if (!is_registered_droplet_css('manufaktur_gallery', PAGE_ID)) { 
 	  		register_droplet_css('manufaktur_gallery', PAGE_ID, 'manufaktur_gallery', 'frontend.css');
 			}
     }
-    else { 
-	    if (function_exists('is_registered_droplet_css') && is_registered_droplet_css('manufaktur_gallery')) {
-		  	unregister_droplet_css('manufaktur_gallery');
-			}
+    elseif (is_registered_droplet_css('manufaktur_gallery', PAGE_ID)) {
+		  unregister_droplet_css('manufaktur_gallery', PAGE_ID);
     }
+    
     // in die Suchfunktion integrieren?
     if ($this->params[self::param_search]) {
     	// Register Droplet for the WebsiteBaker Search Function
-			if (function_exists('is_registered_droplet_search') && !is_registered_droplet_search('manufaktur_gallery')) {
+			if (!is_registered_droplet_search('manufaktur_gallery', PAGE_ID)) {
   			register_droplet_search('manufaktur_gallery', PAGE_ID, 'manufaktur_gallery');
 			}
     }
     else {
-	    if (function_exists('is_registered_droplet_search') && is_registered_droplet_search('manufaktur_gallery')) {
-	  		unregister_droplet_search('manufaktur_gallery');
+	    if (is_registered_droplet_search('manufaktur_gallery', PAGE_ID)) {
+	  		unregister_droplet_search('manufaktur_gallery', PAGE_ID);
 			}
 	  }
 	  
 	  // Seiteninformationen bereitstellen?
 	  if ($this->params[self::param_page_header]) {
-	  	if (function_exists('is_registered_droplet_header') && !is_registered_droplet_header('manufaktur_gallery')) {
-  			register_droplet_header('manufaktur_gallery', PAGE_ID, 'manufaktur_gallery');
-			}
+	  	if (!is_registered_droplet_header('manufaktur_gallery', PAGE_ID)) {
+ 				register_droplet_header('manufaktur_gallery', PAGE_ID, 'manufaktur_gallery');
+	  	}
 	  }
 	  else {
-	  	if (function_exists('is_registered_droplet_header') && is_registered_droplet_header('manufaktur_gallery')) {
-  			unregister_droplet_header('manufaktur_gallery');
+	  	if (is_registered_droplet_header('manufaktur_gallery', PAGE_ID)) {
+  			unregister_droplet_header('manufaktur_gallery', PAGE_ID);
 			}
 	  }
     

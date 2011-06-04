@@ -20,6 +20,7 @@ if (file_exists(WB_PATH.'/modules/manufaktur_gallery/class.gallery.php')) {
 	$params[Gallery::param_photo_description] = (isset($photo_description) && strtolower($photo_description) == 'true') ? true : false;
 	$params[Gallery::param_photo_comments] = (isset($photo_comments) && strtolower($photo_comments) == 'true') ? true : false;
 	$params[Gallery::param_album_comments] = (isset($album_comments) && strtolower($album_comments) == 'false') ? false : true;
+	$params[Gallery::param_page_header] = (isset($page_header) && strtolower($page_header) == 'false') ? false : true;
 	$params[Gallery::param_search] = (isset($search) && strtolower($search) == 'false') ? false : true;
 	$params[Gallery::param_merge_comments] = (isset($merge_comments) && strtolower($merge_comments) == 'true') ? true : false;	  
 	$params[Gallery::param_facebook_id] = (isset($facebook_id)) ? $facebook_id : '';

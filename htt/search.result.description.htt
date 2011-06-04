@@ -8,8 +8,8 @@
  * @version $Id$
  *}
  <div>
-   <div style="float:left;margin:0;padding: 0 20px 0 0;">
-     <img src="{$gallery_image}" />
+   <div style="float:left;margin:0 20px 0 0;padding: 0;">
+     <a href="{$page_url}"><img src="{$gallery_image}" /></a>
    </div>
    <div style="font-style: italic;">{$description}</div>
  </div>
