@@ -47,6 +47,7 @@
  $next_page           = URL zur nächsten Seite des Albums
  
  *}
+<a name="mg"></a><!-- anchor for manufaktur_gallery -->
 <div class="intro">
   <h2>{$album.name}</h2>
   {if isset($album.description)}<p class="description">{$album.description}</p>{/if}
@@ -93,8 +94,8 @@
           <col width="50%" />
         </colgroup>
         <tr>
-          <td class="previous_page">{if (count_characters($previous_page)) > 0}<a href="{$previous_page}"><< Vorherige Seite</a>{else}&nbsp;{/if}</td>
-          <td class="next_page">{if (count_characters($next_page)) > 0}<a href="{$next_page}">Nächste Seite >></a>{else}&nbsp;{/if}</td>        
+          <td class="previous_page">{if (count_characters($previous_page)) > 0}<a href="{$previous_page}#mg"><< Vorherige Seite</a>{else}&nbsp;{/if}</td>
+          <td class="next_page">{if (count_characters($next_page)) > 0}<a href="{$next_page}#mg">Nächste Seite >></a>{else}&nbsp;{/if}</td>        
         </tr>
       </table>
     </td>

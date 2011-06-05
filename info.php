@@ -18,7 +18,7 @@ if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
 $module_directory = 'manufaktur_gallery';
 $module_name = 'manufakturGallery';
 $module_function = 'snippet';
-$module_version = '0.11';
+$module_version = '0.12';
 $module_status = 'Beta';
 $module_platform = '2.8';
 $module_author = 'Ralf Hertsch, Berlin (Germany)';
@@ -29,6 +29,10 @@ $module_guid = '46F86BEE-E4BA-4A5A-BF35-9126BE03404C';
 
 /**
  * Version and Release Notes
+ * 
+ * Release 0.12 - 2011-06-05
+ * - fixed: problem setting header informations at TOPICs articles
+ * - added: anchor for jumping direct to the gallery within articles
  * 
  * Release 0.11 - 2011-06-04
  * - first beta release

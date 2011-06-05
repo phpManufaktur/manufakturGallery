@@ -56,18 +56,20 @@ if (!function_exists('getAlbumID')) {
 			}
 		}
 		 
-		if (empty($album_id)) { 
-			// kein Album gefunden, moeglicherweise TOPICS?
+		if (empty($album_id) && defined('TOPIC_ID')) { 
+			// kein Album gefunden, moeglicherweise TOPICS!
 			$SQL = sprintf("SHOW TABLE STATUS LIKE '%smod_topics'", TABLE_PREFIX);
 			$query = $database->query($SQL);
 			if ($query->numRows() > 0) {
 				// TOPICS ist installiert
-				$SQL = sprintf(	"SELECT content_long, link FROM %smod_topics WHERE page_id='%s' AND (content_long LIKE '%%[[manufaktur_gallery?%%')",
+				$SQL = sprintf(	"SELECT topic_id, content_long, link FROM %smod_topics WHERE page_id='%s' AND (content_long LIKE '%%[[manufaktur_gallery?%%')",
 												TABLE_PREFIX,
 												$page_id);
 				$query = $database->query($SQL);
 				while (false !== ($section = $query->fetchRow(MYSQL_ASSOC))) {
 					if (false !== ($start = strpos($section['content_long'], '[[manufaktur_gallery?'))) {
+						// Droplet gefunden
+						if (TOPIC_ID != $section['topic_id']) continue;
 						$start = $start+strlen('[[manufaktur_gallery?');
 						$end = strpos($section['content_long'], ']]', $start);
 						$param_str = substr($section['content_long'], $start, $end-$start);
@@ -115,9 +117,9 @@ if (!function_exists('manufaktur_gallery_droplet_search')) {
 	  }
 	  $result[] = array(
 	  	'url'						=> $page_url,
-	  	'params'				=> '',
+	  	'params'				=> '#mg',
 	  	'title'					=> $parser->get($tpl_title, array('title' => $album_name)),
-	  	'description'		=> $parser->get($tpl_description, array('gallery_image'	=> $album_image, 'description' => $album_description, 'page_url' => $page_url)),
+	  	'description'		=> $parser->get($tpl_description, array('gallery_image'	=> $album_image, 'description' => $album_description, 'page_url' => $page_url.'#mg')),
 	  	'text'					=> strip_tags("$album_name - $album_description - $all_comments"),
 	  	'modified_when'	=> strtotime($album['updated_time']),
 	  	'modified_by'		=> 1																					
@@ -143,10 +145,10 @@ if (!function_exists('manufaktur_gallery_droplet_search')) {
 			}
 			if (empty($description) && empty($all_comments)) continue;
 			if (empty($description)) $description = $album_description;
-			$img_link = sprintf('%s?position=%s', $page_url, $photo['position']);
+			$img_link = sprintf('%s?position=%s#mg', $page_url, $photo['position']);
 			$result[] = array(
 				'url'						=> $page_url,
-		  	'params'				=> http_build_query(array('position' => $photo['position'])),
+		  	'params'				=> http_build_query(array('position' => $photo['position'])).'#mg',
 		  	'title'					=> $parser->get($tpl_title, array('title' => $album_name)),
 		  	'description'		=> $parser->get($tpl_description, array('gallery_image'	=> $photo['images'][$i]['source'], 'description' => $description, 'page_url' => $img_link)),
 		  	'text'					=> strip_tags("$description - $all_comments"),
@@ -160,9 +162,7 @@ if (!function_exists('manufaktur_gallery_droplet_search')) {
 
 if (!function_exists('manufaktur_gallery_droplet_header')) {
 	function manufaktur_gallery_droplet_header($page_id) {
-		
 		$result = array();
-		
 		$album_id = getAlbumID($page_id);
 		// keine Galerie gefunden?
 		if (empty($album_id)) return $result;
