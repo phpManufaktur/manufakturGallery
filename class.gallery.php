@@ -285,7 +285,14 @@ class Gallery {
 			$this->setError(gallery_error_missing_album_id);
 			return false;
 		}
-		$contents = file_get_contents("http://graph.facebook.com/$album_id");
+		$old_error_reporting = error_reporting(0);
+		if (false == ($contents = file_get_contents("http://graph.facebook.com/$album_id"))) {
+			$error = error_get_last();
+			$this->setError(sprintf(gallery_error_request_album_id, $album_id, $error['message']));
+			return false;
+		}
+		error_reporting($old_error_reporting);
+		
 		$comments = array();
 		$album = json_decode($contents, true);
 		if (isset($album['error'])) {

@@ -19,5 +19,6 @@ define('gallery_error_get_contents',								'Die bei Facebook angeforderten Date
 define('gallery_error_fb_prompt_error',							'[Facebook Fehlermeldung] %s');
 define('gallery_error_no_gallery',									'Zu der ID <b>%s</b> wurde keine Fotogalerie gefunden!');
 define('gallery_error_missing_album_id',						'Geben Sie über den Parameter <b>album_id</b> eine gültige Album ID an!');
+define('gallery_error_request_album_id',						'<p>Beim Abruf des Album mit der ID <b>%s</b> ist ein Fehler aufgetreten:</p><p><i>%s</i></p><p>Eine mögliche Ursache für Fehler bei der Abfrage von Alben ist, dass Sie versuchen auf ein Album von einem privaten Account zuzugreifen.</p>');
 
 ?>

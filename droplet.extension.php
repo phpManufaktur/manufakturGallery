@@ -167,7 +167,14 @@ if (!function_exists('manufaktur_gallery_droplet_header')) {
 		// keine Galerie gefunden?
 		if (empty($album_id)) return $result;
 	
-		$contents = file_get_contents("http://graph.facebook.com/$album_id");
+		$old_error_reporting = error_reporting(0);
+		if (false == ($contents = file_get_contents("http://graph.facebook.com/$album_id"))) {
+			// Fehler bei der Abfrage, in diesem Fall keine Meldung - leeres Array zurueckgeben!
+			return $result;
+		}
+		error_reporting($old_error_reporting);
+		
+		
 		$album = json_decode($contents, true);
 		$album_name = $album['name'];
 		$album_description = (isset($album['description'])) ? $album['description'] : '';
