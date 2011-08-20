@@ -30,6 +30,8 @@ if (defined('WB_PATH')) {
 }
 // end include LEPTON class.secure.php
 
+require_once(WB_PATH.'/modules/kit_tools/class.droplets.php');
+
 global $admin;
 
 $error = '';
