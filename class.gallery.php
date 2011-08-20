@@ -1,4 +1,5 @@
 <?php
+
 /**
  * manufakturGallery
  * 
@@ -7,10 +8,27 @@
  * @copyright 2011
  * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
  * @version $Id$
+ * 
+ * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
  */
 
-// prevent this file from being accessed directly
-if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
+// try to include LEPTON class.secure.php to protect this file and the whole CMS!
+if (defined('WB_PATH')) {	
+	if (defined('LEPTON_VERSION')) include(WB_PATH.'/framework/class.secure.php');
+} elseif (file_exists($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php')) {
+	include($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php'); 
+} else {
+	$subs = explode('/', dirname($_SERVER['SCRIPT_NAME']));	$dir = $_SERVER['DOCUMENT_ROOT'];
+	$inc = false;
+	foreach ($subs as $sub) {
+		if (empty($sub)) continue; $dir .= '/'.$sub;
+		if (file_exists($dir.'/framework/class.secure.php')) { 
+			include($dir.'/framework/class.secure.php'); $inc = true;	break; 
+		} 
+	}
+	if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include LEPTON class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+}
+// end include LEPTON class.secure.php
 
 // include GENERAL language file
 if(!file_exists(WB_PATH .'/modules/kit_tools/languages/' .LANGUAGE .'.php')) {
@@ -286,11 +304,31 @@ class Gallery {
 			return false;
 		}
 		$old_error_reporting = error_reporting(0);
-		if (false == ($contents = file_get_contents("http://graph.facebook.com/$album_id"))) {
-			$error = error_get_last();
-			$this->setError(sprintf(gallery_error_request_album_id, $album_id, $error['message']));
-			return false;
+		if (ini_get('allow_url_fopen') == 1) {
+			// file_get_contents kann verwendet werden
+			if (false === ($contents = file_get_contents("http://graph.facebook.com/$album_id"))) {
+				$error = error_get_last();
+				$this->setError(sprintf(gallery_error_request_album_id, $album_id, $error['message']));
+				return false;
+			}
 		}
+		elseif (in_array('curl', get_loaded_extensions())) {
+			// cURL verwenden
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, "http://graph.facebook.com/$album_id");
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			if (false === ($contents = curl_exec($ch))) {
+				$this->setError(curl_error($ch));
+				curl_close($ch);
+				return false;
+			}
+			curl_close($ch); 
+		}
+		else {
+			// keine geeignete Methode gefunden
+			$this->setError(gallery_error_no_http_request);
+			return false;
+		}		
 		error_reporting($old_error_reporting);
 		
 		$comments = array();
@@ -315,10 +353,33 @@ class Gallery {
 			}
 			$offset = $offset - $this->params[self::param_limit];
 		}
-		$contents = file_get_contents(sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d", 
-																					$album_id,
-																					$this->params[self::param_limit],
-																					$offset));
+		$url = sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d", $album_id, $this->params[self::param_limit],	$offset);
+		if (ini_get('allow_url_fopen') == 1) {
+			// file_get_contents kann verwendet werden
+			if (false === ($contents = file_get_contents($url))) {
+				$error = error_get_last();
+				$this->setError(sprintf(gallery_error_request_album_id, $album_id, $error['message']));
+				return false;
+			}
+		}
+		elseif (in_array('curl', get_loaded_extensions())) {
+			// cURL verwenden
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			if (false === ($contents = curl_exec($ch))) {
+				$this->setError(curl_error($ch));
+				curl_close($ch);
+				return false;
+			}
+			curl_close($ch); 
+		}
+		else {
+			// keine geeignete Methode gefunden
+			$this->setError(gallery_error_no_http_request);
+			return false;
+		}		
+		
 		$photos = json_decode($contents,true);
 		if (isset($photos['error'])) {
 			$this->setError(sprintf(gallery_error_fb_prompt_error, $album['error']['message']));
@@ -388,11 +449,31 @@ class Gallery {
 			$this->setError(gallery_error_missing_fb_id);
 			return false;
 		}
-		
-		if (false == ($contents = file_get_contents(sprintf('http://graph.facebook.com/%s/albums?fields=id,name,type&limit=1000', $facebook_id)))) {
-			$this->setError(gallery_error_get_contents);
+		if (ini_get('allow_url_fopen') == 1) {
+			// file_get_contents kann verwendet werden
+			if (false === ($contents = file_get_contents(sprintf('http://graph.facebook.com/%s/albums?fields=id,name,type&limit=1000', $facebook_id)))) {
+				$this->setError(gallery_error_get_contents);
+				return false;
+			}
+		}
+		elseif (in_array('curl', get_loaded_extensions())) {
+			// cURL verwenden
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, sprintf('http://graph.facebook.com/%s/albums?fields=id,name,type&limit=1000', $facebook_id));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			if (false === ($contents = curl_exec($ch))) {
+				$this->setError(curl_error($ch));
+				curl_close($ch);
+				return false;
+			}
+			curl_close($ch); 
+		}
+		else {
+			// keine geeignete Methode gefunden
+			$this->setError(gallery_error_no_http_request);
 			return false;
 		}
+		
 		$albums = json_decode($contents,true);
 		if (isset($album['error'])) {
 			$this->setError(sprintf(gallery_error_fb_prompt_error, $album['error']['message']));
