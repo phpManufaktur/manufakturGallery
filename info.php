@@ -34,7 +34,7 @@ else {
 $module_directory = 'manufaktur_gallery';
 $module_name = 'manufakturGallery';
 $module_function = 'snippet';
-$module_version = '0.14';
+$module_version = '0.15';
 $module_status = 'Beta';
 $module_platform = '2.8';
 $module_author = 'Ralf Hertsch, Berlin (Germany)';

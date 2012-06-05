@@ -391,7 +391,7 @@ class Gallery {
 		$images = array();
 		foreach ($photos as $photo) {
 			$img = 1;
-		  for ($i = 0; $i < 5; $i++) {
+		  for ($i = 0; $i < count($photo['images']); $i++) {
 		  	if (isset($photo['images'][$i]['width']) && ($photo['images'][$i]['width'] == 180)) {
 		  		$img = $i;
 		  		break;

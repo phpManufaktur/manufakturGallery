@@ -1,5 +1,9 @@
 ### manufakturGallery
 
+0.15 - 2012-06-05
+
+* fixed a problem getting the correct image dimension
+
 0.14 - 2012-06-05
 
 * moved repository from SVN to GitHub
