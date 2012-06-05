@@ -2,33 +2,34 @@
 
 /**
  * manufakturGallery
- * 
- * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
- * @copyright 2011
- * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
- * @version $Id$
- * 
- * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
+ * @copyright 2011 - 2012
+ * @license http://www.gnu.org/licenses/gpl.html GNU Public License (GPL)
  */
 
-// try to include LEPTON class.secure.php to protect this file and the whole CMS!
-if (defined('WB_PATH')) {	
-	if (defined('LEPTON_VERSION')) include(WB_PATH.'/framework/class.secure.php');
-} elseif (file_exists($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php')) {
-	include($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php'); 
-} else {
-	$subs = explode('/', dirname($_SERVER['SCRIPT_NAME']));	$dir = $_SERVER['DOCUMENT_ROOT'];
-	$inc = false;
-	foreach ($subs as $sub) {
-		if (empty($sub)) continue; $dir .= '/'.$sub;
-		if (file_exists($dir.'/framework/class.secure.php')) { 
-			include($dir.'/framework/class.secure.php'); $inc = true;	break; 
-		} 
-	}
-	if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include LEPTON class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+// include class.secure.php to protect this file and the whole CMS!
+if (defined('WB_PATH')) {
+  if (defined('LEPTON_VERSION'))
+    include(WB_PATH.'/framework/class.secure.php');
 }
-// end include LEPTON class.secure.php
+else {
+  $oneback = "../";
+  $root = $oneback;
+  $level = 1;
+  while (($level < 10) && (!file_exists($root.'/framework/class.secure.php'))) {
+    $root .= $oneback;
+    $level += 1;
+  }
+  if (file_exists($root.'/framework/class.secure.php')) {
+    include($root.'/framework/class.secure.php');
+  }
+  else {
+    trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+  }
+}
+// end include class.secure.php
 
 require_once(WB_PATH.'/modules/dbconnect_le/include.php');
 require_once(WB_PATH.'/modules/dwoo/include.php');
@@ -36,12 +37,12 @@ require_once(WB_PATH.'/modules/droplets_extension/class.pages.php');
 
 // include language file for the gallery
 if(!file_exists(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/' .LANGUAGE .'.php')) {
-	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/DE.php'); // Vorgabe: DE verwenden 
+	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/DE.php'); // Vorgabe: DE verwenden
 	if (!defined('GALLERY_LANGUAGE')) define('GALLERY_LANGUAGE', 'DE'); // die Konstante gibt an in welcher Sprache manufakturGallery aktuell arbeitet
 }
 else {
 	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/' .LANGUAGE .'.php');
-	if (!defined('GALLERY_LANGUAGE')) define('GALLERY_LANGUAGE', LANGUAGE); 
+	if (!defined('GALLERY_LANGUAGE')) define('GALLERY_LANGUAGE', LANGUAGE);
 }
 
 if (!function_exists('getAlbumID')) {
@@ -59,8 +60,8 @@ if (!function_exists('getAlbumID')) {
 			return false;
 		}
 		$album_id = '';
-		
-		foreach ($sections as $section) { 
+
+		foreach ($sections as $section) {
 			if (false !== ($start = strpos($section[db_wb_mod_wysiwyg::field_text], '[[manufaktur_gallery?'))) {
 				$start = $start+strlen('[[manufaktur_gallery?');
 				$end = strpos($section[db_wb_mod_wysiwyg::field_text], ']]', $start);
@@ -73,8 +74,8 @@ if (!function_exists('getAlbumID')) {
 				}
 			}
 		}
-		 
-		if (empty($album_id) && defined('TOPIC_ID')) { 
+
+		if (empty($album_id) && defined('TOPIC_ID')) {
 			// kein Album gefunden, moeglicherweise TOPICS!
 			$SQL = sprintf("SHOW TABLE STATUS LIKE '%smod_topics'", TABLE_PREFIX);
 			$query = $database->query($SQL);
@@ -93,43 +94,43 @@ if (!function_exists('getAlbumID')) {
 						$param_str = substr($section['content_long'], $start, $end-$start);
 						$param_str = str_ireplace('&amp;', '&', $param_str);
 						parse_str($param_str, $params);
-						if (isset($params['album_id'])) { 
-							$album_id = $params['album_id']; 
-							$page_url = WB_URL.PAGES_DIRECTORY.'/topics/'.$section['link'].PAGE_EXTENSION; 
+						if (isset($params['album_id'])) {
+							$album_id = $params['album_id'];
+							$page_url = WB_URL.PAGES_DIRECTORY.'/topics/'.$section['link'].PAGE_EXTENSION;
 							break;
 						}
-					}	
-				} 
-			}			
-		}		
+					}
+				}
+			}
+		}
 		return $album_id;
 	} // getAlbumID()
 }
 
 if (!function_exists('manufaktur_gallery_droplet_search')) {
-	function manufaktur_gallery_droplet_search($page_id, $page_url) { 
-		
+	function manufaktur_gallery_droplet_search($page_id, $page_url) {
+
 		$result = array();
-		
+
 		$album_id = getAlbumID($page_id, $params, $page_url);
 		// keine Galerie gefunden?
 		if (empty($album_id)) return $result;
-	
+
 		$contents = file_get_contents("http://graph.facebook.com/$album_id");
 		$album = json_decode($contents, true);
 		$album_name = $album['name'];
 		$album_description = (isset($album['description'])) ? $album['description'] : '';
 		$album_image = "http://graph.facebook.com/$album_id/picture?type=thumbnail";
 		$comments = (isset($album['comments'])) ? $album['comments']['data'] : array();
-		
+
 		$parser = new Dwoo();
 		$htt_path = WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/htt/';
 	  $tpl_title = new Dwoo_Template_File($htt_path.'search.result.title.htt');
 	  $tpl_description = new Dwoo_Template_File($htt_path.'search.result.description.htt');
-	  
+
 	  $result = array();
 	  // erster Eintrag mit Titel und Beschreibung des Albums
-	  $all_comments = ''; 
+	  $all_comments = '';
 	  foreach ($comments as $comment) {
 	  	$all_comments .= $comment['from']['name'].' - '.$comment['message'];
 	  }
@@ -140,10 +141,10 @@ if (!function_exists('manufaktur_gallery_droplet_search')) {
 	  	'description'		=> $parser->get($tpl_description, array('gallery_image'	=> $album_image, 'description' => $album_description, 'page_url' => $page_url.'#mg')),
 	  	'text'					=> strip_tags("$album_name - $album_description - $all_comments"),
 	  	'modified_when'	=> strtotime($album['updated_time']),
-	  	'modified_by'		=> 1																					
+	  	'modified_by'		=> 1
 	  );
-	  
-	  $contents = file_get_contents(sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d", 
+
+	  $contents = file_get_contents(sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d",
 																					$album_id,
 																					200,
 																					0));
@@ -152,7 +153,7 @@ if (!function_exists('manufaktur_gallery_droplet_search')) {
 			trigger_error(sprintf(gallery_error_fb_prompt_error, $album['error']['message']));
 			return false;
 		}
-	
+
 		foreach ($photos['data'] as $photo) {
 			$i = count($photo['images'])-1;
 			$description = (isset($photo['name'])) ? $photo['name'] : '';
@@ -184,19 +185,19 @@ if (!function_exists('manufaktur_gallery_droplet_header')) {
 		$album_id = getAlbumID($page_id);
 		// keine Galerie gefunden?
 		if (empty($album_id)) return $result;
-	
+
 		$old_error_reporting = error_reporting(0);
 		if (false == ($contents = file_get_contents("http://graph.facebook.com/$album_id"))) {
 			// Fehler bei der Abfrage, in diesem Fall keine Meldung - leeres Array zurueckgeben!
 			return $result;
 		}
 		error_reporting($old_error_reporting);
-		
-		
+
+
 		$album = json_decode($contents, true);
 		$album_name = $album['name'];
 		$album_description = (isset($album['description'])) ? $album['description'] : '';
-		
+
 		$result = array(
 			'title'				=> $album_name,
 			'description'	=> $album_description,

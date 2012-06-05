@@ -2,37 +2,38 @@
 
 /**
  * manufakturGallery
- * 
- * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
- * @copyright 2011
- * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
- * @version $Id$
- * 
- * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
+ * @copyright 2011 - 2012
+ * @license http://www.gnu.org/licenses/gpl.html GNU Public License (GPL)
  */
 
-// try to include LEPTON class.secure.php to protect this file and the whole CMS!
-if (defined('WB_PATH')) {	
-	if (defined('LEPTON_VERSION')) include(WB_PATH.'/framework/class.secure.php');
-} elseif (file_exists($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php')) {
-	include($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php'); 
-} else {
-	$subs = explode('/', dirname($_SERVER['SCRIPT_NAME']));	$dir = $_SERVER['DOCUMENT_ROOT'];
-	$inc = false;
-	foreach ($subs as $sub) {
-		if (empty($sub)) continue; $dir .= '/'.$sub;
-		if (file_exists($dir.'/framework/class.secure.php')) { 
-			include($dir.'/framework/class.secure.php'); $inc = true;	break; 
-		} 
-	}
-	if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include LEPTON class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+// include class.secure.php to protect this file and the whole CMS!
+if (defined('WB_PATH')) {
+  if (defined('LEPTON_VERSION'))
+    include(WB_PATH.'/framework/class.secure.php');
 }
-// end include LEPTON class.secure.php
+else {
+  $oneback = "../";
+  $root = $oneback;
+  $level = 1;
+  while (($level < 10) && (!file_exists($root.'/framework/class.secure.php'))) {
+    $root .= $oneback;
+    $level += 1;
+  }
+  if (file_exists($root.'/framework/class.secure.php')) {
+    include($root.'/framework/class.secure.php');
+  }
+  else {
+    trigger_error(sprintf("[ <b>%s</b> ] Can't include class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+  }
+}
+// end include class.secure.php
 
 // include GENERAL language file
 if(!file_exists(WB_PATH .'/modules/kit_tools/languages/' .LANGUAGE .'.php')) {
-	require_once(WB_PATH .'/modules/kit_tools/languages/DE.php'); // Vorgabe: DE verwenden 
+	require_once(WB_PATH .'/modules/kit_tools/languages/DE.php'); // Vorgabe: DE verwenden
 }
 else {
 	require_once(WB_PATH .'/modules/kit_tools/languages/' .LANGUAGE .'.php');
@@ -40,12 +41,12 @@ else {
 
 // include language file for the gallery
 if(!file_exists(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/' .LANGUAGE .'.php')) {
-	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/DE.php'); // Vorgabe: DE verwenden 
+	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/DE.php'); // Vorgabe: DE verwenden
 	if (!defined('GALLERY_LANGUAGE')) define('GALLERY_LANGUAGE', 'DE'); // die Konstante gibt an in welcher Sprache manufakturGallery aktuell arbeitet
 }
 else {
 	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/' .LANGUAGE .'.php');
-	if (!defined('GALLERY_LANGUAGE')) define('GALLERY_LANGUAGE', LANGUAGE); 
+	if (!defined('GALLERY_LANGUAGE')) define('GALLERY_LANGUAGE', LANGUAGE);
 }
 
 if (!class_exists('Dwoo')) 								require_once(WB_PATH.'/modules/dwoo/include.php');
@@ -68,15 +69,15 @@ class Gallery {
 	const request_action							= 'act';
 	const request_offset							= 'offset';
 	const request_position						= 'position';
-	
+
 	const action_default							= 'def';
 	const action_list									= 'list';
-	
+
 	private $page_link 								= '';
 	private $template_path						= '';
 	private $error										= '';
 	private $message									= '';
-	
+
 	const param_preset								= 'preset';
 	const param_css										= 'css';
 	const param_album_id							= 'album_id';
@@ -87,13 +88,13 @@ class Gallery {
 	const param_photo_description			= 'photo_description';
 	const param_photo_comments				= 'photo_comments';
 	const param_album_comments				= 'album_comments';
-	const param_merge_comments				= 'merge_comments'; 
+	const param_merge_comments				= 'merge_comments';
 	const param_search								= 'search';
 	const param_page_header						= 'page_header';
-	
+
 	private $params = array(
 		self::param_preset							=> 1,
-		self::param_css									=> true, 
+		self::param_css									=> true,
 		self::param_album_id						=> '',
 		self::param_action							=> self::action_default,
 		self::param_facebook_id					=> '',
@@ -106,21 +107,21 @@ class Gallery {
 		self::param_search							=> true,
 		self::param_page_header					=> true
 	);
-	
+
 	public function __construct() {
 		global $kitLibrary;
 		$url = '';
-		$_SESSION['FRONTEND'] = true;	
+		$_SESSION['FRONTEND'] = true;
 		$kitLibrary->getPageLinkByPageID(PAGE_ID, $url);
-		$this->page_link = $url; 
+		$this->page_link = $url;
 		$this->template_path = WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/htt/'.$this->params[self::param_preset].'/'.GALLERY_LANGUAGE.'/' ;
-		date_default_timezone_set(tool_cfg_time_zone);		
+		date_default_timezone_set(tool_cfg_time_zone);
 	} // __construct()
-	
+
 	public function getParams() {
 		return $this->params;
 	} // getParams()
-	
+
 	public function setParams($params = array()) {
 		$this->params = $params;
 		$this->template_path = WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/htt/'.$this->params[self::param_preset].'/'.GALLERY_LANGUAGE.'/';
@@ -130,10 +131,10 @@ class Gallery {
 		}
 		return true;
 	} // setParams()
-	
+
 	/**
     * Set $this->error to $error
-    * 
+    *
     * @param STR $error
     */
   public function setError($error) {
@@ -142,7 +143,7 @@ class Gallery {
 
   /**
     * Get Error from $this->error;
-    * 
+    *
     * @return STR $this->error
     */
   public function getError() {
@@ -151,7 +152,7 @@ class Gallery {
 
   /**
     * Check if $this->error is empty
-    * 
+    *
     * @return BOOL
     */
   public function isError() {
@@ -166,7 +167,7 @@ class Gallery {
   }
 
   /** Set $this->message to $message
-    * 
+    *
     * @param STR $message
     */
   public function setMessage($message) {
@@ -175,7 +176,7 @@ class Gallery {
 
   /**
     * Get Message from $this->message;
-    * 
+    *
     * @return STR $this->message
     */
   public function getMessage() {
@@ -184,42 +185,42 @@ class Gallery {
 
   /**
     * Check if $this->message is empty
-    * 
+    *
     * @return BOOL
     */
   public function isMessage() {
     return (bool) !empty($this->message);
   } // isMessage
-  
+
   /**
    * Gibt das gewuenschte Template zurueck
-   * 
+   *
    * @param STR $template
    * @param ARRAY $template_data
    */
   public function getTemplate($template, $template_data) {
   	global $parser;
   	try {
-  		$result = $parser->get($this->template_path.$template, $template_data); 
+  		$result = $parser->get($this->template_path.$template, $template_data);
   	} catch (Exception $e) {
   		$this->setError(sprintf(form_error_template_error, $template, $e->getMessage()));
   		return false;
   	}
   	return $result;
   } // getTemplate()
-	
-	
+
+
 	public function getFacebookSDKversion() {
-		return Facebook::VERSION;	
+		return Facebook::VERSION;
 	} // getFacebookSDKversion
-	
+
 	/**
    * Verhindert XSS Cross Site Scripting
-   * 
+   *
    * @param REFERENCE ARRAY $request
    * @return ARRAY $request
    */
-	public function xssPrevent(&$request) { 
+	public function xssPrevent(&$request) {
   	if (is_string($request)) {
 	    $request = html_entity_decode($request);
 	    $request = strip_tags($request);
@@ -228,31 +229,31 @@ class Gallery {
   	}
 	  return $request;
   } // xssPrevent()
-	
+
 	public function action() {
 		$html_allowed = array();
   	foreach ($_REQUEST as $key => $value) {
   		if (!in_array($key, $html_allowed)) {
-  			$_REQUEST[$key] = $this->xssPrevent($value);	  			
-  		} 
+  			$_REQUEST[$key] = $this->xssPrevent($value);
+  		}
   	}
   	// Welche Aktion soll ausgefuehrt werden?
   	$action = (isset($_REQUEST[self::request_action])) ? $_REQUEST[self::request_action] : $this->params[self::param_action];
-  
-  	// CSS laden? 
-    if ($this->params[self::param_css]) { 
-			if (!is_registered_droplet_css('manufaktur_gallery', PAGE_ID)) { 
+
+  	// CSS laden?
+    if ($this->params[self::param_css]) {
+			if (!is_registered_droplet_css('manufaktur_gallery', PAGE_ID)) {
 	  		register_droplet_css('manufaktur_gallery', PAGE_ID, 'manufaktur_gallery', 'frontend.css');
 			}
     }
     elseif (is_registered_droplet_css('manufaktur_gallery', PAGE_ID)) {
 		  unregister_droplet_css('manufaktur_gallery', PAGE_ID);
     }
-    
+
     // in die Suchfunktion integrieren?
     if ($this->params[self::param_search]) {
     	// Register Droplet for the WebsiteBaker Search Function
-			if (!is_registered_droplet_search('manufaktur_gallery', PAGE_ID)) { 
+			if (!is_registered_droplet_search('manufaktur_gallery', PAGE_ID)) {
   			register_droplet_search('manufaktur_gallery', PAGE_ID, 'manufaktur_gallery');
 			}
     }
@@ -261,7 +262,7 @@ class Gallery {
 	  		unregister_droplet_search('manufaktur_gallery', PAGE_ID);
 			}
 	  }
-	  
+
 	  // Seiteninformationen bereitstellen?
 	  if ($this->params[self::param_page_header]) {
 	  	if (!is_registered_droplet_header('manufaktur_gallery', PAGE_ID)) {
@@ -273,7 +274,7 @@ class Gallery {
   			unregister_droplet_header('manufaktur_gallery', PAGE_ID);
 			}
 	  }
-    
+
     switch($action):
 		case self::action_list:
 			// verfuegbare Alben anzeigen
@@ -284,10 +285,10 @@ class Gallery {
 			$result = $this->showAlbum();
 			break;
     endswitch;
-    		
+
     return $this->show($result);
 	} // action()
-	
+
 	public function show($content) {
 		$data = array(
   		'error'				=> ($this->isError()) ? 1 : 0,
@@ -295,10 +296,10 @@ class Gallery {
   	);
   	return $this->getTemplate('body.htt', $data);
 	}
-	
+
 	public function showAlbum() {
 		$album_id = isset($this->params[self::param_album_id]) ? $this->params[self::param_album_id] : '';
-		
+
 		if (empty($album_id)) {
 			$this->setError(gallery_error_missing_album_id);
 			return false;
@@ -322,15 +323,15 @@ class Gallery {
 				curl_close($ch);
 				return false;
 			}
-			curl_close($ch); 
+			curl_close($ch);
 		}
 		else {
 			// keine geeignete Methode gefunden
 			$this->setError(gallery_error_no_http_request);
 			return false;
-		}		
+		}
 		error_reporting($old_error_reporting);
-		
+
 		$comments = array();
 		$album = json_decode($contents, true);
 		if (isset($album['error'])) {
@@ -342,7 +343,7 @@ class Gallery {
 				$comments[] = $comment;
 			}
 		}
-		
+
 		$offset = isset($_REQUEST[self::request_offset]) ? $_REQUEST[self::request_offset] : 0;
 		$position = isset($_REQUEST[self::request_position]) ? $_REQUEST[self::request_position] : -1;
 		if ($position > $this->params[self::param_limit]) {
@@ -372,14 +373,14 @@ class Gallery {
 				curl_close($ch);
 				return false;
 			}
-			curl_close($ch); 
+			curl_close($ch);
 		}
 		else {
 			// keine geeignete Methode gefunden
 			$this->setError(gallery_error_no_http_request);
 			return false;
-		}		
-		
+		}
+
 		$photos = json_decode($contents,true);
 		if (isset($photos['error'])) {
 			$this->setError(sprintf(gallery_error_fb_prompt_error, $album['error']['message']));
@@ -406,8 +407,8 @@ class Gallery {
 		  	'image_height'			=> $photo['images'][$img]['height'],
 		  	'image_description'	=> isset($photo['name']) ? $photo['name'] : '' ,
 		 		'comments'					=> $photo_comments,
-		  	'selected'					=> $position == $photo['position'] ? 1 : 0 										 
-			); 
+		  	'selected'					=> $position == $photo['position'] ? 1 : 0
+			);
 			if (!empty($photo_comments) && $this->params[self::param_merge_comments]) {
 				foreach ($photo_comments as $comment) {
 					$comments[] = $comment;
@@ -416,14 +417,14 @@ class Gallery {
 		}
 		$next_page = '';
 		$previous_page = '';
-		if (isset($paging['next'])) { 
+		if (isset($paging['next'])) {
 			parse_str($paging['next'], $next);
 			$next_page = sprintf('%s%s%s=%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', self::request_offset, $next['offset']);
-		}	
+		}
 		if (isset($paging['previous'])) {
 			parse_str($paging['previous'], $previous);
 			$previous_page = sprintf('%s%s%s=%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', self::request_offset, $previous['offset']);
-		}	
+		}
 		$album['comments'] = $comments;
 		$data = array(
 			'album'							=> $album,
@@ -439,7 +440,7 @@ class Gallery {
 		);
 		return $this->getTemplate('gallery.htt', $data);
 	} // showAlbum()
-	
+
 	/**
 	 * Zeigt die zu der Facebook ID verfuegbaren Foto Alben an
 	 */
@@ -466,14 +467,14 @@ class Gallery {
 				curl_close($ch);
 				return false;
 			}
-			curl_close($ch); 
+			curl_close($ch);
 		}
 		else {
 			// keine geeignete Methode gefunden
 			$this->setError(gallery_error_no_http_request);
 			return false;
 		}
-		
+
 		$albums = json_decode($contents,true);
 		if (isset($album['error'])) {
 			$this->setError(sprintf(gallery_error_fb_prompt_error, $album['error']['message']));
@@ -484,7 +485,7 @@ class Gallery {
 			return false;
 		}
 		$albums = $albums['data'];
-  	$galleries = array(); 
+  	$galleries = array();
 		foreach ($albums as $row) {
 			$galleries[] = array(
 				'type'		=> $row['type'],
@@ -498,7 +499,7 @@ class Gallery {
 		);
 		return $this->getTemplate('list.htt', $data);
 	} // showFBinfo()
-	
+
 } // class gallery
 
 ?>

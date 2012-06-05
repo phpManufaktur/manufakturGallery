@@ -2,12 +2,11 @@
 //:Please visit http://phpManufaktur.de for informations about manufakturGallery!
 /**
  * manufakturGallery
- * 
- * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
- * @copyright 2011
- * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
- * @version $Id$
+ * @copyright 2011 - 2012
+ * @license http://www.gnu.org/licenses/gpl.html GNU Public License (GPL)
  */
 if (file_exists(WB_PATH.'/modules/manufaktur_gallery/class.gallery.php')) {
 	require_once(WB_PATH.'/modules/manufaktur_gallery/class.gallery.php');
@@ -22,7 +21,7 @@ if (file_exists(WB_PATH.'/modules/manufaktur_gallery/class.gallery.php')) {
 	$params[Gallery::param_album_comments] = (isset($album_comments) && strtolower($album_comments) == 'false') ? false : true;
 	$params[Gallery::param_page_header] = (isset($page_header) && strtolower($page_header) == 'false') ? false : true;
 	$params[Gallery::param_search] = (isset($search) && strtolower($search) == 'false') ? false : true;
-	$params[Gallery::param_merge_comments] = (isset($merge_comments) && strtolower($merge_comments) == 'true') ? true : false;	  
+	$params[Gallery::param_merge_comments] = (isset($merge_comments) && strtolower($merge_comments) == 'true') ? true : false;
 	$params[Gallery::param_facebook_id] = (isset($facebook_id)) ? $facebook_id : '';
 	$params[Gallery::param_limit] = (isset($limit)) ? (int) $limit : 24;
 	$params[Gallery::param_columns] = (isset($columns)) ? (int) $columns : 3;

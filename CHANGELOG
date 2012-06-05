@@ -1,0 +1,24 @@
+### manufakturGallery
+
+0.14 - 2012-06-05
+
+* moved repository from SVN to GitHub
+* added CHANGELOG
+* added LICENSE
+* added README.md
+* removed info.txt
+* updated all header and archive informations
+
+0.13 - 2011-08-20
+
+* added: support for cURL extension
+* changed: grant compatibillity for LEPTON CMS
+
+0.12 - 2011-06-05
+
+* fixed: problem setting header informations at TOPICs articles
+* added: anchor for jumping direct to the gallery within articles
+ 
+0.11 - 2011-06-04
+
+* first beta release
