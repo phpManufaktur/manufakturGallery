@@ -116,7 +116,36 @@ if (!function_exists('manufaktur_gallery_droplet_search')) {
 		// keine Galerie gefunden?
 		if (empty($album_id)) return $result;
 
-		$contents = file_get_contents("http://graph.facebook.com/$album_id");
+		//$contents = file_get_contents("http://graph.facebook.com/$album_id");
+
+		$old_error_reporting = error_reporting(0);
+		if (ini_get('allow_url_fopen') == 1) {
+		  // file_get_contents kann verwendet werden
+		  if (false === ($contents = file_get_contents("http://graph.facebook.com/$album_id"))) {
+		    $error = error_get_last();
+		    trigger_error(sprintf(gallery_error_request_album_id, $album_id, $error['message']), E_USER_ERROR);
+		    return false;
+		  }
+		}
+		elseif (in_array('curl', get_loaded_extensions())) {
+		  // cURL verwenden
+		  $ch = curl_init();
+		  curl_setopt($ch, CURLOPT_URL, "http://graph.facebook.com/$album_id");
+		  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		  if (false === ($contents = curl_exec($ch))) {
+		    trigger_error(curl_error($ch), E_USER_ERROR);
+		    curl_close($ch);
+		    return false;
+		  }
+		  curl_close($ch);
+		}
+		else {
+		  // keine geeignete Methode gefunden
+		  trigger_error(gallery_error_no_http_request, E_USER_ERROR);
+		  return false;
+		}
+		error_reporting($old_error_reporting);
+
 		$album = json_decode($contents, true);
 		$album_name = $album['name'];
 		$album_description = (isset($album['description'])) ? $album['description'] : '';
@@ -144,13 +173,33 @@ if (!function_exists('manufaktur_gallery_droplet_search')) {
 	  	'modified_by'		=> 1
 	  );
 
-	  $contents = file_get_contents(sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d",
-																					$album_id,
-																					200,
-																					0));
+	  //$contents = file_get_contents(sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d",	$album_id, 200,	0));
+
+	  $old_error_reporting = error_reporting(0);
+	  if (ini_get('allow_url_fopen') == 1) {
+	    // file_get_contents kann verwendet werden
+	    if (false === ($contents = file_get_contents(sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d",	$album_id, 200,	0)))) {
+	      $error = error_get_last();
+	      trigger_error(sprintf(gallery_error_request_album_id, $album_id, $error['message']), E_USER_ERROR);
+	      return false;
+	    }
+	  }
+	  elseif (in_array('curl', get_loaded_extensions())) {
+	    // cURL verwenden
+	    $ch = curl_init();
+	    curl_setopt($ch, CURLOPT_URL, sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d",	$album_id, 200,	0));
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	    if (false === ($contents = curl_exec($ch))) {
+	      trigger_error(curl_error($ch), E_USER_ERROR);
+	      curl_close($ch);
+	      return false;
+	    }
+	    curl_close($ch);
+	  }
+
 		$photos = json_decode($contents,true);
 		if (isset($photos['error'])) {
-			trigger_error(sprintf(gallery_error_fb_prompt_error, $album['error']['message']));
+			trigger_error(sprintf(gallery_error_fb_prompt_error, $album['error']['message']), E_USER_ERROR);
 			return false;
 		}
 

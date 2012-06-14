@@ -1,5 +1,10 @@
 ### manufakturGallery
 
+0.16 - 2012-06-14
+
+* added cUrl extension support for the search module
+* removed WebsiteBaker version check
+
 0.15 - 2012-06-05
 
 * fixed a problem getting the correct image dimension
