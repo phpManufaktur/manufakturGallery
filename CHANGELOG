@@ -1,5 +1,9 @@
 ### manufakturGallery
 
+0.17 - 
+
+* fixed a typo in README.md
+
 0.16 - 2012-06-14
 
 * added cUrl extension support for the search module

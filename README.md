@@ -29,7 +29,7 @@ Replace <YOUR_FACEBOOK_ID> with your own ID. Save the page and look at the resul
 
 Copy the Album ID you want to use and rewrite the droplet call to
 
-     [[manufaktur_gallery?facebook_id=<YOUR_FACEBOOK_ID>&album_id=<ALBUM_ID>]] 
+     [[manufaktur_gallery?album_id=<ALBUM_ID>]] 
      
 Replace <ALBUM_ID> with the correct ID.
 
