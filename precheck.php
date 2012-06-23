@@ -47,7 +47,10 @@ $sql = "SELECT `value` FROM `".TABLE_PREFIX."settings` WHERE `name`='default_cha
 $result = $database->query($sql);
 
 // check allow_url_open and cURL
-$url_status = ((ini_get('allow_url_fopen') == 1) || in_array('curl', get_loaded_extensions())) ? 'enabled' : 'disabled';
+$url_status = (ini_get('allow_url_fopen') == 1) ? 'enabled' : 'disabled';
+
+$curl_status = function_exists('curl_init') ? 'loaded' : 'missing';
+$json_status = function_exists('json_decode') ? 'loaded' : 'missing';
 
 if ($result) {
 	$data = $result->fetchRow(MYSQL_ASSOC);
@@ -56,10 +59,20 @@ if ($result) {
 			'REQUIRED' 	=> 'utf-8',
 			'ACTUAL' 		=> $data['value'],
 			'STATUS' 		=> ($data['value'] === 'utf-8')),
-		'allow_url_open or cURL' => array(
+		'allow_url_open' => array(
 			'REQUIRED'	=> 'enabled',
 			'ACTUAL'		=> $url_status,
-			'STATUS'		=> ($url_status == 'enabled'))
+			'STATUS'		=> ($url_status == 'enabled')),
+	  'cURL extension' => array(
+	      'REQUIRED' => 'loaded',
+	      'ACTUAL' => $curl_status,
+	      'STATUS' => ($curl_status == 'loaded')
+	      ),
+	  'JSON extension' => array(
+	      'REQUIRED' => 'loaded',
+	      'ACTUAL' => $json_status,
+	      'STATUS' => ($json_status == 'loaded')
+	      )
 	);
 }
 
