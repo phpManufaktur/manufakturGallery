@@ -3,6 +3,7 @@
 0.17 - 
 
 * fixed a typo in README.md
+* extended precheck.php for cURL and JSON check
 
 0.16 - 2012-06-14
 
