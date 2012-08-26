@@ -1,9 +1,11 @@
 ### manufakturGallery
 
-0.17 - 
+0.17 - NOT PUBLISHED - JUST IN PROGRESS
 
 * fixed a typo in README.md
 * extended precheck.php for cURL and JSON check
+* changed frontend.css to manufaktur_gallery.css
+* replaced file_get_contents by cURL method
 
 0.16 - 2012-06-14
 
