@@ -34,13 +34,13 @@ else {
 $module_directory = 'manufaktur_gallery';
 $module_name = 'manufakturGallery';
 $module_function = 'snippet';
-$module_version = '0.16';
+$module_version = '0.17';
 $module_status = 'Beta';
 $module_platform = '2.8';
 $module_author = 'Ralf Hertsch, Berlin (Germany)';
-$module_license = 'GNU General Public License';
+$module_license = 'MIT License (MIT)';
 $module_description = 'manufakturGallery - integrate Facebook Galleries into WebsiteBaker';
-$module_home = 'http://phpmanufaktur.de/manufaktur_gallery';
+$module_home = 'https://addons.phpmanufaktur.de/de/name/manufakturgallery.php';
 $module_guid = '46F86BEE-E4BA-4A5A-BF35-9126BE03404C';
 
 ?>

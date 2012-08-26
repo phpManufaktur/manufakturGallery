@@ -1,12 +1,13 @@
 ### manufakturGallery
 
-0.17 - NOT PUBLISHED - JUST IN PROGRESS
+0.17 - 2012-08-26
 
 * fixed a typo in README.md
 * extended precheck.php for cURL and JSON check
 * changed frontend.css to manufaktur_gallery.css
 * replaced file_get_contents by cURL method
 * fixed - search function does not work for TOPICS
+* changed license from GNU GPL to MIT
 
 0.16 - 2012-06-14
 
