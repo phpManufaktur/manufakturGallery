@@ -31,9 +31,7 @@ else {
 }
 // end include class.secure.php
 
-require_once(WB_PATH.'/modules/dbconnect_le/include.php');
 require_once(WB_PATH.'/modules/dwoo/include.php');
-require_once(WB_PATH.'/modules/droplets_extension/class.pages.php');
 
 // include language file for the gallery
 if(!file_exists(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/' .LANGUAGE .'.php')) {
@@ -48,24 +46,20 @@ else {
 if (!function_exists('getAlbumID')) {
 	function getAlbumID($page_id, &$params=array(), &$page_url='') {
 		global $database;
-		$db_wysiwyg = new db_wb_mod_wysiwyg();
-		$SQL = sprintf(	"SELECT %s FROM %s WHERE %s='%s'",
-										db_wb_mod_wysiwyg::field_text,
-										$db_wysiwyg->getTableName(),
-										db_wb_mod_wysiwyg::field_page_id,
-										$page_id);
-		$sections = array();
-		if (!$db_wysiwyg->sqlExec($SQL, $sections)) {
-			trigger_error(sprintf('[%s - %s] %s', __FUNCTION__, __LINE__, $db_wysiwyg->getError()), E_USER_ERROR);
-			return false;
+
+		$SQL = "SELECT `text` FROM `".TABLE_PREFIX."mod_wysiwyg` WHERE `page_id`='$page_id'";
+		if (null == ($query = $database->query($SQL))) {
+		  trigger_error(sprintf('[%s - %s] %s', __FUNCTION__, __LINE__, $database->get_error()), E_USER_ERROR);
+		  return false;
 		}
+
 		$album_id = '';
 
-		foreach ($sections as $section) {
-			if (false !== ($start = strpos($section[db_wb_mod_wysiwyg::field_text], '[[manufaktur_gallery?'))) {
+		while (false !== ($section = $query->fetchRow(MYSQL_ASSOC))) {
+			if (false !== ($start = strpos($section['text'], '[[manufaktur_gallery?'))) {
 				$start = $start+strlen('[[manufaktur_gallery?');
-				$end = strpos($section[db_wb_mod_wysiwyg::field_text], ']]', $start);
-				$param_str = substr($section[db_wb_mod_wysiwyg::field_text], $start, $end-$start);
+				$end = strpos($section['text'], ']]', $start);
+				$param_str = substr($section['text'], $start, $end-$start);
 				$param_str = str_ireplace('&amp;', '&', $param_str);
 				parse_str($param_str, $params);
 				if (isset($params['album_id'])) {
@@ -74,8 +68,7 @@ if (!function_exists('getAlbumID')) {
 				}
 			}
 		}
-
-		if (empty($album_id) && defined('TOPIC_ID')) {
+		if (empty($album_id)) {
 			// kein Album gefunden, moeglicherweise TOPICS!
 			$SQL = sprintf("SHOW TABLE STATUS LIKE '%smod_topics'", TABLE_PREFIX);
 			$query = $database->query($SQL);
@@ -88,15 +81,21 @@ if (!function_exists('getAlbumID')) {
 				while (false !== ($section = $query->fetchRow(MYSQL_ASSOC))) {
 					if (false !== ($start = strpos($section['content_long'], '[[manufaktur_gallery?'))) {
 						// Droplet gefunden
-						if (TOPIC_ID != $section['topic_id']) continue;
+//						if (TOPIC_ID != $section['topic_id']) continue;
 						$start = $start+strlen('[[manufaktur_gallery?');
 						$end = strpos($section['content_long'], ']]', $start);
 						$param_str = substr($section['content_long'], $start, $end-$start);
 						$param_str = str_ireplace('&amp;', '&', $param_str);
 						parse_str($param_str, $params);
 						if (isset($params['album_id'])) {
+						  // get the album ID
 							$album_id = $params['album_id'];
-							$page_url = WB_URL.PAGES_DIRECTORY.'/topics/'.$section['link'].PAGE_EXTENSION;
+							// get the TOPICS directory
+							global $topics_directory;
+							include_once WB_PATH . '/modules/topics/module_settings.php';
+							// change the page URL
+							$page_url = WB_URL . $topics_directory . $section['link'] . PAGE_EXTENSION;
+							// leave the loop
 							break;
 						}
 					}
@@ -116,35 +115,16 @@ if (!function_exists('manufaktur_gallery_droplet_search')) {
 		// keine Galerie gefunden?
 		if (empty($album_id)) return $result;
 
-		//$contents = file_get_contents("http://graph.facebook.com/$album_id");
-
-		$old_error_reporting = error_reporting(0);
-		if (ini_get('allow_url_fopen') == 1) {
-		  // file_get_contents kann verwendet werden
-		  if (false === ($contents = file_get_contents("http://graph.facebook.com/$album_id"))) {
-		    $error = error_get_last();
-		    trigger_error(sprintf(gallery_error_request_album_id, $album_id, $error['message']), E_USER_ERROR);
-		    return false;
-		  }
-		}
-		elseif (in_array('curl', get_loaded_extensions())) {
-		  // cURL verwenden
-		  $ch = curl_init();
-		  curl_setopt($ch, CURLOPT_URL, "http://graph.facebook.com/$album_id");
-		  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		  if (false === ($contents = curl_exec($ch))) {
-		    trigger_error(curl_error($ch), E_USER_ERROR);
-		    curl_close($ch);
-		    return false;
-		  }
-		  curl_close($ch);
-		}
-		else {
-		  // keine geeignete Methode gefunden
-		  trigger_error(gallery_error_no_http_request, E_USER_ERROR);
-		  return false;
-		}
-		error_reporting($old_error_reporting);
+		// cURL verwenden
+	  $ch = curl_init();
+	  curl_setopt($ch, CURLOPT_URL, "http://graph.facebook.com/$album_id");
+	  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	  if (false === ($contents = curl_exec($ch))) {
+	    trigger_error(curl_error($ch), E_USER_ERROR);
+	    curl_close($ch);
+	    return false;
+	  }
+	  curl_close($ch);
 
 		$album = json_decode($contents, true);
 		$album_name = $album['name'];
@@ -173,29 +153,16 @@ if (!function_exists('manufaktur_gallery_droplet_search')) {
 	  	'modified_by'		=> 1
 	  );
 
-	  //$contents = file_get_contents(sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d",	$album_id, 200,	0));
-
-	  $old_error_reporting = error_reporting(0);
-	  if (ini_get('allow_url_fopen') == 1) {
-	    // file_get_contents kann verwendet werden
-	    if (false === ($contents = file_get_contents(sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d",	$album_id, 200,	0)))) {
-	      $error = error_get_last();
-	      trigger_error(sprintf(gallery_error_request_album_id, $album_id, $error['message']), E_USER_ERROR);
-	      return false;
-	    }
-	  }
-	  elseif (in_array('curl', get_loaded_extensions())) {
-	    // cURL verwenden
-	    $ch = curl_init();
-	    curl_setopt($ch, CURLOPT_URL, sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d",	$album_id, 200,	0));
-	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	    if (false === ($contents = curl_exec($ch))) {
-	      trigger_error(curl_error($ch), E_USER_ERROR);
-	      curl_close($ch);
-	      return false;
-	    }
-	    curl_close($ch);
-	  }
+    // cURL verwenden
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d",	$album_id, 200,	0));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    if (false === ($contents = curl_exec($ch))) {
+      trigger_error(curl_error($ch), E_USER_ERROR);
+      curl_close($ch);
+      return false;
+    }
+    curl_close($ch);
 
 		$photos = json_decode($contents,true);
 		if (isset($photos['error'])) {
@@ -235,12 +202,16 @@ if (!function_exists('manufaktur_gallery_droplet_header')) {
 		// keine Galerie gefunden?
 		if (empty($album_id)) return $result;
 
-		$old_error_reporting = error_reporting(0);
-		if (false == ($contents = file_get_contents("http://graph.facebook.com/$album_id"))) {
-			// Fehler bei der Abfrage, in diesem Fall keine Meldung - leeres Array zurueckgeben!
-			return $result;
+		// cURL verwenden
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, "http://graph.facebook.com/$album_id");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		if (false === ($contents = curl_exec($ch))) {
+		  trigger_error(curl_error($ch), E_USER_ERROR);
+		  curl_close($ch);
+		  return false;
 		}
-		error_reporting($old_error_reporting);
+		curl_close($ch);
 
 
 		$album = json_decode($contents, true);
