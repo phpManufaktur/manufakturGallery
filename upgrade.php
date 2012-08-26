@@ -34,8 +34,16 @@ else {
 require_once(WB_PATH.'/modules/kit_tools/class.droplets.php');
 
 global $admin;
+global $database;
 
 $error = '';
+
+// Release 0.17 - changed frontend.css to manufaktur_gallery.css
+$SQL = "UPDATE `".TABLE_PREFIX."mod_droplets_extension` SET `drop_file`='manufaktur_gallery.css' ".
+  "WHERE `drop_module_dir`='manufaktur_gallery' AND `drop_type`='css'";
+if (!$database->query($SQL)) {
+  $admin->print_error('[UPDATE mod_droplets_extension] '.$database->get_error());
+}
 
 // remove Droplets
 $dbDroplets = new dbDroplets();
@@ -60,7 +68,6 @@ if ($message != "") {
 
 // Prompt Errors
 if (!empty($error)) {
-	global $admin;
 	$admin->print_error($error);
 }
 
