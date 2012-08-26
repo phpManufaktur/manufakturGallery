@@ -243,7 +243,7 @@ class Gallery {
   	// CSS laden?
     if ($this->params[self::param_css]) {
 			if (!is_registered_droplet_css('manufaktur_gallery', PAGE_ID)) {
-	  		register_droplet_css('manufaktur_gallery', PAGE_ID, 'manufaktur_gallery', 'frontend.css');
+	  		register_droplet_css('manufaktur_gallery', PAGE_ID, 'manufaktur_gallery', 'manufaktur_gallery.css');
 			}
     }
     elseif (is_registered_droplet_css('manufaktur_gallery', PAGE_ID)) {
@@ -304,33 +304,16 @@ class Gallery {
 			$this->setError(gallery_error_missing_album_id);
 			return false;
 		}
-		$old_error_reporting = error_reporting(0);
-		if (ini_get('allow_url_fopen') == 1) {
-			// file_get_contents kann verwendet werden
-			if (false === ($contents = file_get_contents("http://graph.facebook.com/$album_id"))) {
-				$error = error_get_last();
-				$this->setError(sprintf(gallery_error_request_album_id, $album_id, $error['message']));
-				return false;
-			}
-		}
-		elseif (in_array('curl', get_loaded_extensions())) {
-			// cURL verwenden
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, "http://graph.facebook.com/$album_id");
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			if (false === ($contents = curl_exec($ch))) {
-				$this->setError(curl_error($ch));
-				curl_close($ch);
-				return false;
-			}
+		// cURL verwenden
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, "http://graph.facebook.com/$album_id");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		if (false === ($contents = curl_exec($ch))) {
+			$this->setError(curl_error($ch));
 			curl_close($ch);
-		}
-		else {
-			// keine geeignete Methode gefunden
-			$this->setError(gallery_error_no_http_request);
 			return false;
 		}
-		error_reporting($old_error_reporting);
+		curl_close($ch);
 
 		$comments = array();
 		$album = json_decode($contents, true);
@@ -355,31 +338,16 @@ class Gallery {
 			$offset = $offset - $this->params[self::param_limit];
 		}
 		$url = sprintf("http://graph.facebook.com/%s/photos?limit=%d&offset=%d", $album_id, $this->params[self::param_limit],	$offset);
-		if (ini_get('allow_url_fopen') == 1) {
-			// file_get_contents kann verwendet werden
-			if (false === ($contents = file_get_contents($url))) {
-				$error = error_get_last();
-				$this->setError(sprintf(gallery_error_request_album_id, $album_id, $error['message']));
-				return false;
-			}
-		}
-		elseif (in_array('curl', get_loaded_extensions())) {
-			// cURL verwenden
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			if (false === ($contents = curl_exec($ch))) {
-				$this->setError(curl_error($ch));
-				curl_close($ch);
-				return false;
-			}
+		// cURL verwenden
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		if (false === ($contents = curl_exec($ch))) {
+			$this->setError(curl_error($ch));
 			curl_close($ch);
-		}
-		else {
-			// keine geeignete Methode gefunden
-			$this->setError(gallery_error_no_http_request);
 			return false;
 		}
+		curl_close($ch);
 
 		$photos = json_decode($contents,true);
 		if (isset($photos['error'])) {
@@ -450,30 +418,16 @@ class Gallery {
 			$this->setError(gallery_error_missing_fb_id);
 			return false;
 		}
-		if (ini_get('allow_url_fopen') == 1) {
-			// file_get_contents kann verwendet werden
-			if (false === ($contents = file_get_contents(sprintf('http://graph.facebook.com/%s/albums?fields=id,name,type&limit=1000', $facebook_id)))) {
-				$this->setError(gallery_error_get_contents);
-				return false;
-			}
-		}
-		elseif (in_array('curl', get_loaded_extensions())) {
-			// cURL verwenden
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, sprintf('http://graph.facebook.com/%s/albums?fields=id,name,type&limit=1000', $facebook_id));
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			if (false === ($contents = curl_exec($ch))) {
-				$this->setError(curl_error($ch));
-				curl_close($ch);
-				return false;
-			}
+		// cURL verwenden
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, sprintf('http://graph.facebook.com/%s/albums?fields=id,name,type&limit=1000', $facebook_id));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		if (false === ($contents = curl_exec($ch))) {
+			$this->setError(curl_error($ch));
 			curl_close($ch);
-		}
-		else {
-			// keine geeignete Methode gefunden
-			$this->setError(gallery_error_no_http_request);
 			return false;
 		}
+		curl_close($ch);
 
 		$albums = json_decode($contents,true);
 		if (isset($album['error'])) {
