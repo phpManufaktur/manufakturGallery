@@ -6,7 +6,7 @@
  * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
  * @copyright 2011 - 2012
- * @license http://www.gnu.org/licenses/gpl.html GNU Public License (GPL)
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 if (file_exists(WB_PATH.'/modules/manufaktur_gallery/class.gallery.php')) {
 	require_once(WB_PATH.'/modules/manufaktur_gallery/class.gallery.php');

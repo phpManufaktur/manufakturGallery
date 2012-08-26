@@ -6,7 +6,7 @@
  * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
  * @link http://phpmanufaktur.de
  * @copyright 2011 - 2012
- * @license http://www.gnu.org/licenses/gpl.html GNU Public License (GPL)
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
 // include class.secure.php to protect this file and the whole CMS!
@@ -81,7 +81,6 @@ if (!function_exists('getAlbumID')) {
 				while (false !== ($section = $query->fetchRow(MYSQL_ASSOC))) {
 					if (false !== ($start = strpos($section['content_long'], '[[manufaktur_gallery?'))) {
 						// Droplet gefunden
-//						if (TOPIC_ID != $section['topic_id']) continue;
 						$start = $start+strlen('[[manufaktur_gallery?');
 						$end = strpos($section['content_long'], ']]', $start);
 						$param_str = substr($section['content_long'], $start, $end-$start);

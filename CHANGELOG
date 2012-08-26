@@ -6,6 +6,7 @@
 * extended precheck.php for cURL and JSON check
 * changed frontend.css to manufaktur_gallery.css
 * replaced file_get_contents by cURL method
+* fixed - search function does not work for TOPICS
 
 0.16 - 2012-06-14
 
