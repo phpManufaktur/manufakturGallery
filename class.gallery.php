@@ -387,12 +387,16 @@ class Gallery {
 		$previous_page = '';
 		if (isset($paging['next'])) {
 			parse_str($paging['next'], $next);
-			$next_page = sprintf('%s%s%s=%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', self::request_offset, $next['offset']);
+			$next_page = sprintf('%s%s%s=%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', self::request_offset, $offset+$this->params[self::param_limit]);//$next['offset']);
+			if ($offset > 0)
+			  $previous_page = sprintf('%s%s%s=%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', self::request_offset, $offset-$this->params[self::param_limit]);//$previous['offset']);
 		}
+		/*
 		if (isset($paging['previous'])) {
 			parse_str($paging['previous'], $previous);
 			$previous_page = sprintf('%s%s%s=%s', $this->page_link, (strpos($this->page_link, '?') === false) ? '?' : '&', self::request_offset, $previous['offset']);
 		}
+		*/
 		$album['comments'] = $comments;
 		$data = array(
 			'album'							=> $album,
