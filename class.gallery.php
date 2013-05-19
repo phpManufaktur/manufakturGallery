@@ -375,7 +375,7 @@ class Gallery {
 		  	'image_height'			=> $photo['images'][$img]['height'],
 		  	'image_description'	=> isset($photo['name']) ? $photo['name'] : '' ,
 		 		'comments'					=> $photo_comments,
-		  	'selected'					=> $position == $photo['position'] ? 1 : 0
+		  	'selected'					=> (isset($photo['position']) && $position == $photo['position']) ? 1 : 0
 			);
 			if (!empty($photo_comments) && $this->params[self::param_merge_comments]) {
 				foreach ($photo_comments as $comment) {
