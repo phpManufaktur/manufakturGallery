@@ -35,10 +35,9 @@ else {
 
 $PRECHECK['PHP_VERSION'] = array('VERSION' => '5.2.0', 'OPERATOR' => '>=');
 $PRECHECK['WB_ADDONS'] = array(
-	'dwoo' => array('VERSION' => '0.10', 'OPERATOR' => '>='),
-	'droplets' => array('VERSION' => '1.0', 'OPERATOR' => '>='),
-	'kit_tools' => array('VERSION' => '0.11', 'OPRATOR' => '>='),
-	'droplets_extension' => array('VERSION' => '0.11', 'OPERATOR' => '>=')
+	'dwoo' => array('VERSION' => '0.17', 'OPERATOR' => '>='),
+	'kit_tools' => array('VERSION' => '0.18', 'OPRATOR' => '>='),
+	'droplets_extension' => array('VERSION' => '0.25', 'OPERATOR' => '>=')
 );
 
 // check utf-8

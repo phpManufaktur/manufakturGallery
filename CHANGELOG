@@ -1,8 +1,9 @@
 ### manufakturGallery
 
-0.18 - NOT PUBLISHED YET
+0.18 - 2013-05-23
 
 * fixed a problem with the gallery paging
+* updated precheck.php to actual version
 
 0.17 - 2012-08-26
 
@@ -40,7 +41,7 @@
 
 * fixed: problem setting header informations at TOPICs articles
 * added: anchor for jumping direct to the gallery within articles
- 
+
 0.11 - 2011-06-04
 
 * first beta release
